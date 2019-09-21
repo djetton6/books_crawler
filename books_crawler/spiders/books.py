@@ -13,8 +13,14 @@ class BooksSpider(Spider):
     allowed_domains = ['books.toscrape.com']
     start_urls = ['http://books.toscrape.com']
 
-    def start_requests(self):
-        self.driver = webdriver.Chrome('')
+    def parse(self, response):
+        books = response.xpath('//h3/a/@href').extract()
+        for book in books:
+            absolute_url = response.urljoin(book)
+            yield Request(absolute_url, callback=self.parse_book)
+
+    def parse_book(self, response):
+        pass
 
 
 # From first example to show scraping multiple pages
